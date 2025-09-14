@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+psutil
+gputil
+setuptools
+requests
+python-dotenv
