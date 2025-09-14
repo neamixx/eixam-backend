@@ -7,6 +7,7 @@ import subprocess
 import os 
 import requests
 from dotenv import load_dotenv
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -140,22 +141,9 @@ def device_name():
         "hostname": hostname
     }
 
-@app.post("/ai")
-async def ai_endpoint(request: Request):
-    body = await request.json()
-
-    headers = {
-        "Authorization": f"Bearer {TANDEM_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    response = requests.post(TANDEM_API_URL, headers=headers, json=body)
-
-    try:
-        return response.json()
-    except Exception:
-        return {
-            "error": "Invalid response",
-            "status": response.status_code,
-            "text": response.text
-        }
+@app.get("/systemstats")
+def system_stats():
+    response = requests.get("http://10.17.88.253:8080/hi")
+    return JSONResponse(
+        content=response.json()
+    )
