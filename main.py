@@ -6,7 +6,6 @@ import platform
 import subprocess
 import os 
 import requests
-from dotenv import load_dotenv
 from fastapi.responses import JSONResponse
 
 app = FastAPI()
@@ -18,13 +17,6 @@ app.add_middleware(
     allow_methods=["*"],        # permite GET, POST, PUT, DELETE...
     allow_headers=["*"]         # permite cualquier cabecera
 )
-
-load_dotenv()
-
-TANDEM_API_URL = "https://api.tandemn.com/api/v1/chat/completions"
-TANDEM_API_KEY = os.getenv("TANDEM_API_KEY")
-
-
 
 # --- Endpoints ---
 @app.get("/")
@@ -141,9 +133,21 @@ def device_name():
         "hostname": hostname
     }
 
+#Get the global computer stats 
 @app.get("/systemstats")
 def system_stats():
-    response = requests.get("http://10.17.88.253:8080/hi")
-    return JSONResponse(
-        content=response.json()
-    )
+    response = requests.get("http://127.0.0.1:8080/sys")
+    data = response.json()
+
+    processed_data = {
+        "cpu_avg": round(data["cpu_avg"], 1),
+        "gpu": data["gpu"],  
+        "ram_usage_percent": round(data["ram_usage_percent"], 1)
+    }
+
+    return processed_data
+#Get all the computers stats connected in the same network
+@app.get("/allsystem")
+def all_system_stats():
+    response = requests.get("http://127.0.0.1:8080/allsys")
+    return response.json()
